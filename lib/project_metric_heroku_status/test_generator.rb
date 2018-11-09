@@ -8,7 +8,8 @@ class ProjectMetricHerokuStatus
         data: {
            release: releases,
            web_status: status,
-           web_response: reason
+           web_response: reason,
+           app_link: 'https://github.com/an-ju/projectscope'
         },
        chartType: 'heroku_status'
       }.to_json,

@@ -22,7 +22,8 @@ class ProjectMetricHerokuStatus
     { chartType: 'heroku_status',
       data: { release: first_success,
               web_status: @webpage.status,
-              web_response: @webpage.reason_phrase
+              web_response: @webpage.reason_phrase,
+              app_link: "https://#{@heroku_app}.herokuapp.com/"
       } }.to_json
   end
 

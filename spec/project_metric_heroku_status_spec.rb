@@ -48,6 +48,7 @@ RSpec.describe ProjectMetricHerokuStatus do
       expect(image['data']['release'].length).to eql(2)
       expect(image['data']['web_status']).to eql(200)
       expect(image['data']['web_response']).to eql('OK')
+      expect(image['data']['app_link']).to eql('https://teamscope.herokuapp.com/')
     end
 
   end
@@ -63,6 +64,7 @@ RSpec.describe ProjectMetricHerokuStatus do
       expect(image['data']['release'].length).to be > 0
       expect(image['data']['web_status']).not_to be_nil
       expect(image['data']['web_response']).not_to be_nil
+      expect(image['data']['app_link']).not_to be_nil
     end
   end
 
