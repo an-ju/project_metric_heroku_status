@@ -3,8 +3,12 @@ require 'project_metric_heroku_status/test_generator'
 require 'faraday'
 require 'json'
 
+require 'project_metric_base'
+
 class ProjectMetricHerokuStatus
-  attr_reader :raw_data
+  include ProjectMetricBase
+  add_credentials %I[heroku_app heroku_token]
+  add_raw_data %w[heroku_releases heroku_webpage]
 
   def initialize(credentials = {}, raw_data = nil)
     @heroku_app = credentials[:heroku_app]
@@ -13,62 +17,42 @@ class ProjectMetricHerokuStatus
     @conn.headers['Accept'] = 'application/vnd.heroku+json; version=3'
     @conn.headers['Authorization'] = "Bearer #{credentials[:heroku_token]}"
 
-    @raw_data = raw_data
+    complete_with raw_data
   end
 
   def image
-    refresh unless @raw_data
-
     { chartType: 'heroku_status',
       data: { release: first_success,
-              web_status: @webpage.status,
-              web_response: @webpage.reason_phrase,
+              web_status: @heroku_webpage['status'],
+              web_response: @heroku_webpage['reason_phrase'],
               app_link: "https://#{@heroku_app}.herokuapp.com/"
-      } }.to_json
+      } }
   end
 
   def score
-    refresh unless @raw_data
-
-    @webpage.status < 400 ? 100 : 0
+    @heroku_webpage['status'] < 400 ? 100 : 0
   end
 
-  def commit_sha
-    nil
-  end
-
-  def raw_data=(new)
-    @raw_data = new
-    @score = @image = nil
-  end
-
-  def refresh
-    set_releases
-    set_webpage
-    @raw_data = { releases: @releases,
-                  webpage: { status: @webpage.status,
-                             location: @webpage.headers['location'],
-                             body: @webpage.body
-                  } }.to_json
-    true
-  end
-
-  def self.credentials
-    %I[heroku_app heroku_token]
+  def obj_id
+    @heroku_releases.find { |r| r['status'] == 'succeeded' }['id']
   end
 
   private
 
-  def set_releases
-    @releases = JSON.parse(@conn.get("app/#{@heroku_app}/releases").body)
+  def heroku_releases
+    @heroku_releases = JSON.parse(@conn.get("app/#{@heroku_app}/releases").body)
   end
 
-  def set_webpage
-    @webpage = Faraday.get "https://#{@heroku_app}.herokuapp.com/"
+  def heroku_webpage
+    resp = Faraday.get "https://#{@heroku_app}.herokuapp.com/"
+    @heroku_webpage = { 'status' => resp.status,
+                        'reason_phrase' => resp.reason_phrase,
+                        'location' => resp.headers['location'],
+                        'body' => resp.body }
   end
 
   def first_success
-    success_release = @releases.find_index { |r| r['status'] == 'succeeded' }
-    success_release ? @releases[0..success_release] : nil
+    success_release = @heroku_releases.find_index { |r| r['status'] == 'succeeded' }
+    success_release ? @heroku_releases[0..success_release] : nil
   end
 end

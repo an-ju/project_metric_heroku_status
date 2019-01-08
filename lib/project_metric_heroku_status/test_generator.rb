@@ -12,7 +12,7 @@ class ProjectMetricHerokuStatus
            app_link: 'https://github.com/an-ju/projectscope'
         },
        chartType: 'heroku_status'
-      }.to_json,
+      },
       score: status > 400 ? 0 : 100
     }
   end
