@@ -8,7 +8,7 @@ RSpec.describe ProjectMetricHerokuStatus do
 
   context 'generate data' do
     before :each do
-      stub_request(:get, 'https://api.heroku.com/app/teamscope/releases')
+      stub_request(:get, 'https://api.heroku.com/apps/teamscope/releases')
         .to_return(body: File.read('spec/data/releases.json'))
 
     end

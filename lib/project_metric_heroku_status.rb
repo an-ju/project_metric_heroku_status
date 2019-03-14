@@ -40,7 +40,7 @@ class ProjectMetricHerokuStatus
   private
 
   def heroku_releases
-    @heroku_releases = JSON.parse(@conn.get("app/#{@heroku_app}/releases").body)
+    @heroku_releases = JSON.parse(@conn.get("apps/#{@heroku_app}/releases").body)
   end
 
   def heroku_webpage
