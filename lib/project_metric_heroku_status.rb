@@ -52,8 +52,7 @@ class ProjectMetricHerokuStatus
     resp = Faraday.get "https://#{@heroku_app}.herokuapp.com/"
     @heroku_webpage = { 'status' => resp.status,
                         'reason_phrase' => resp.reason_phrase,
-                        'location' => resp.headers['location'],
-                        'body' => resp.body }
+                        'location' => resp.headers['location'] }
   end
 
   def first_success
