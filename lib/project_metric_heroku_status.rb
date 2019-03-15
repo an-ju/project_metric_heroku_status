@@ -1,6 +1,7 @@
 require "project_metric_heroku_status/version"
 require 'project_metric_heroku_status/test_generator'
 require 'faraday'
+require 'faraday_middleware'
 require 'json'
 
 require 'project_metric_base'
@@ -13,11 +14,15 @@ class ProjectMetricHerokuStatus
   def initialize(credentials = {}, raw_data = nil)
     @heroku_app = credentials[:heroku_app]
 
-    @conn = Faraday.new(url: 'https://api.heroku.com/')
+    @conn = Faraday.new(url: 'https://api.heroku.com/') do |conn|
+      conn.use :gzip
+      conn.adapter Faraday.default_adapter
+    end
     @conn.headers['Accept'] = 'application/vnd.heroku+json; version=3'
     @conn.headers['Authorization'] = "Bearer #{credentials[:heroku_token]}"
 
     complete_with raw_data
+
   end
 
   def image
