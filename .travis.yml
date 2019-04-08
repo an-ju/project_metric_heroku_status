@@ -6,4 +6,4 @@ rvm:
   - 2.3.8
 before_install: gem install bundler -v 1.17.1
 script:
-  - bundle exec rspec --exclude-pattern "spec/with_token_spec.rb"
+  - bundle exec rspec --exclude-pattern "spec/with_tokens_spec.rb"
