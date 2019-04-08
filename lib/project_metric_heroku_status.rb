@@ -28,6 +28,7 @@ class ProjectMetricHerokuStatus
   def image
     { chartType: 'heroku_status',
       data: { release: first_success,
+              forbidden: @heroku_releases.class.eql?(Hash),
               web_status: @heroku_webpage['status'],
               web_response: @heroku_webpage['reason_phrase'],
               app_link: "https://#{@heroku_app}.herokuapp.com/"
@@ -56,6 +57,9 @@ class ProjectMetricHerokuStatus
   end
 
   def first_success
+    if @heroku_releases.class.eql? Hash
+      return nil
+    end
     success_release = @heroku_releases.find_index { |r| r['status'] == 'succeeded' }
     success_release ? @heroku_releases[0..success_release] : nil
   end
