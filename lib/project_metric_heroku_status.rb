@@ -27,7 +27,7 @@ class ProjectMetricHerokuStatus
 
   def image
     { chartType: 'heroku_status',
-      data: { release: first_success,
+      data: { release: recent_releases,
               forbidden: @heroku_releases.class.eql?(Hash),
               web_status: @heroku_webpage['status'],
               web_response: @heroku_webpage['reason_phrase'],
@@ -56,11 +56,10 @@ class ProjectMetricHerokuStatus
                         'location' => resp.headers['location'] }
   end
 
-  def first_success
+  def recent_releases
     if @heroku_releases.class.eql? Hash
       return nil
     end
-    success_release = @heroku_releases.find_index { |r| r['status'] == 'succeeded' }
-    success_release ? @heroku_releases[0..success_release] : nil
+    @heroku_releases.select { |r| Date.iso8601(r['created_at']) >= (Date.today - 14) }
   end
 end

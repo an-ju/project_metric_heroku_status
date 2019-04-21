@@ -40,7 +40,7 @@ RSpec.describe ProjectMetricHerokuStatus do
           .to_return(body: 'resp body', status: [200, 'OK'])
       image = heroku_status_metric_sample.image
       expect(image).to have_key(:data)
-      expect(image[:data][:release].length).to eql(2)
+      expect(image[:data][:release]).to be_a Array
       expect(image[:data][:web_status]).to eql(200)
       expect(image[:data][:web_response]).to eql('OK')
       expect(image[:data][:app_link]).to eql('https://teamscope.herokuapp.com/')

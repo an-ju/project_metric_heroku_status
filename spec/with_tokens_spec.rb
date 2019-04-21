@@ -21,4 +21,12 @@ RSpec.describe ProjectMetricHerokuStatus do
   it 'sets score properly' do
     expect(metric.score).not_to be_nil
   end
+
+  it 'gets all releases' do
+    expect(metric.raw_data['heroku_releases'].length).to be > 1
+  end
+
+  it 'gets more than one releases' do
+    expect(metric.image[:data][:release].length).to be > 1
+  end
 end
